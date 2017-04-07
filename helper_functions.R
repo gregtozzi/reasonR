@@ -71,3 +71,21 @@ scenario_prob_evolution <- function(S) {
   zoo(cumProbMat / sumVec, Index)
 }
 
+sample_scenario <- function(S) {
+  lapply(S$evidence, function(y) sapply(y$odds, sample, size = 1))
+}
+
+simulate_scenario <- function(S, n = 100) {
+  Hypos <- S$hypotheses
+  Priors <- S$prior
+  simulateRealizations <- lapply(1:n, function(x) sample_scenario(S))
+  allSims <- lapply(simulateRealizations, simulate_engine, P = Priors)
+  matrix(unlist(allSims), nrow = length(allSims[[1]]))
+}
+
+simulate_engine <- function(R, P) {
+  probMat <- rbind(P, matrix(unlist(R), ncol = 3) %>% t)
+  cumProbMat <- apply(probMat, 2, cumprod)
+  sumVec <- rowSums(cumProbMat)
+  (cumProbMat / sumVec)[nrow(probMat),]
+}
