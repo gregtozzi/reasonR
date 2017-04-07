@@ -84,7 +84,7 @@ simulate_scenario <- function(S, n = 100) {
 }
 
 simulate_engine <- function(R, P) {
-  probMat <- rbind(P, matrix(unlist(R), ncol = 3) %>% t)
+  probMat <- rbind(P, matrix(unlist(R), ncol = length(R)) %>% t)
   cumProbMat <- apply(probMat, 2, cumprod)
   sumVec <- rowSums(cumProbMat)
   (cumProbMat / sumVec)[nrow(probMat),]
